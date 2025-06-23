@@ -1,0 +1,3 @@
+D:/ProjectUnlockMusic/MyKgmWasm/cmake-build-debug/CMakeFiles/MyKgmWasm.dir
+D:/ProjectUnlockMusic/MyKgmWasm/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/ProjectUnlockMusic/MyKgmWasm/cmake-build-debug/CMakeFiles/rebuild_cache.dir
