@@ -7,3 +7,8 @@ MyKgmWasm 可以在 c++ 或android 中解锁音乐文件
 
 KgmWasm：
 https://github.com/nullptr-0/KgmWasm
+
+
+
+
+AndroidKgmCodecExample 文件夹是 android demo ，放一起了
