@@ -14,6 +14,17 @@
 // 每次可以处理 2M 的数据
 static int DECRYPTION_BUF_SIZE = 2 * 1024 * 1024;
 
+class DecodeResult {
+public:
+    const char *ext = NULL;
+    std::vector<uint8_t> *data = NULL;
+
+    ~DecodeResult() {
+        delete data;
+        data = nullptr;
+    }
+};
+
 class KgmCodec {
 public:
     KgmCodec();
@@ -21,11 +32,11 @@ public:
     ~KgmCodec();
 
 
-    std::vector<uint8_t> * decodeKgm( char *filepath);
+    DecodeResult *decodeKgm(char *filepath);
 
     void Decrypt(uint8_t *fileData, size_t blobSize, size_t offset);
 
-     uint8_t getMask(size_t pos);
+    uint8_t getMask(size_t pos);
 
     size_t PreDec(uint8_t *fileData, size_t size, bool iV);
 

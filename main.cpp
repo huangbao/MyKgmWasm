@@ -12,13 +12,20 @@ int main() {
     char *filepath = "D:\\ProjectUnlockMusic\\MyKgmWasm\\data\\bb.kgm";
 
 
-    std::vector<uint8_t> *result = kgmCodec->decodeKgm(filepath);
-    std::cout << "解密完成：size " << result->size() << std::endl;
+    DecodeResult *result = kgmCodec->decodeKgm(filepath);
+    std::cout << "解密完成：size " << result->data->size() << std::endl;
+    char outputPath[50] = "D:\\ProjectUnlockMusic\\MyKgmWasm\\data\\tmp4.";
+    strcat(outputPath, result->ext);
+    //char *outputPath = "D:\\ProjectUnlockMusic\\MyKgmWasm\\data\\tmp4." + result->ext;
+    writeFile(outputPath, result->data);
 
-    writeFile("D:\\ProjectUnlockMusic\\MyKgmWasm\\data\\tmp4.flac", result);
+    std::cout << "保存文件：" << outputPath << std::endl;
 
+    delete result;
     delete kgmCodec;
     kgmCodec = nullptr;
+
+    std::cout << "end" << std::endl;
     return 0;
 
 

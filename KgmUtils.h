@@ -11,14 +11,13 @@
 
 static std::vector<uint8_t> VprHeader = {
         0x05, 0x28, 0xBC, 0x96, 0xE9, 0xE4, 0x5A, 0x43,
-        0x91, 0xAA, 0xBD, 0xD0, 0x7A, 0xF5, 0x36, 0x31 };
+        0x91, 0xAA, 0xBD, 0xD0, 0x7A, 0xF5, 0x36, 0x31};
 static std::vector<uint8_t> KgmHeader = {
         0x7C, 0xD5, 0x32, 0xEB, 0x86, 0x02, 0x7F, 0x4B,
-        0xA8, 0xAF, 0xA6, 0x8E, 0x0F, 0xFF, 0x99, 0x14 };
+        0xA8, 0xAF, 0xA6, 0x8E, 0x0F, 0xFF, 0x99, 0x14};
 static std::vector<uint8_t> VprMaskDiff = {
         0x25, 0xDF, 0xE8, 0xA6, 0x75, 0x1E, 0x75, 0x0E,
-        0x2F, 0x80, 0xF3, 0x2D, 0xB8, 0xB6, 0xE3, 0x11, 0x00 };
-
+        0x2F, 0x80, 0xF3, 0x2D, 0xB8, 0xB6, 0xE3, 0x11, 0x00};
 
 
 static std::vector<uint8_t> table1 = {
@@ -80,12 +79,23 @@ static std::vector<uint8_t> MaskV2PreDef = {
         0xAB, 0x12, 0xB2, 0x13, 0xE8, 0x84, 0xD7, 0xA7, 0x9F, 0x0F, 0x32, 0x4C, 0x55, 0x1D, 0x04, 0x36,
         0x52, 0xDC, 0x03, 0xF3, 0xF9, 0x4E, 0x42, 0xE9, 0x3D, 0x61, 0xEF, 0x7C, 0xB6, 0xB3, 0x93, 0x50,
 };
-static uint8_t *writeFile(char *filepath, std::vector<uint8_t> *data) {
+
+static std::vector<uint8_t> FLAC_HEADER = {0x66, 0x4c, 0x61, 0x43};
+static std::vector<uint8_t> MP3_HEADER = {0x49, 0x44, 0x33};
+static std::vector<uint8_t> OGG_HEADER = {0x4f, 0x67, 0x67, 0x53};
+static std::vector<uint8_t> M4A_HEADER = {0x66, 0x74, 0x79, 0x70};
+static std::vector<uint8_t> WMA_HEADER = {0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11,
+                                          0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c,};
+static std::vector<uint8_t> WAV_HEADER = {0x52, 0x49, 0x46, 0x46};
+static std::vector<uint8_t> AAC_HEADER = {0xff, 0xf1};
+static std::vector<uint8_t> DFF_HEADER = {0x46, 0x52, 0x4d, 0x38};
+
+static uint8_t writeFile(char *filepath, std::vector<uint8_t> *data) {
     std::ofstream file(filepath, std::ios::out | std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "无法打开文件" << std::endl;
         file.close();
-        return nullptr;
+        return 0;
     }
 
 
@@ -93,6 +103,7 @@ static uint8_t *writeFile(char *filepath, std::vector<uint8_t> *data) {
     file.flush();
 
     file.close();
+    return 1;
 }
 
 static uint8_t *readFile(char *filepath, int *bufferSize) {
@@ -136,10 +147,49 @@ static int getMin(int a, int b) {
 }
 
 
-
-static char *getExt(const char *path) {
-    char *ptr = strstr(path, ".") + 1;
+static const char *getExt(const char *path) {
+    const char *ptr = strstr(path, ".") + 1;
     return ptr;
 }
+
+
+static bool BytesHasPrefix(std::vector<uint8_t> *data, std::vector<uint8_t> *header, int dataIndex) {
+
+    for (int i = 0; i < header->size(); ++i) {
+        if (header->at(i) != data->at(i + dataIndex)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static const char *parseAudioExt(std::vector<uint8_t> *data) {
+    if (BytesHasPrefix(data, &FLAC_HEADER, 0)) {
+        return "flac";
+    }
+    if (BytesHasPrefix(data, &MP3_HEADER, 0)) {
+        return "mp3";
+    }
+    if (BytesHasPrefix(data, &OGG_HEADER, 0)) {
+        return "ogg";
+    }
+    if (BytesHasPrefix(data, &WAV_HEADER, 0)) {
+        return "wav";
+    }
+    if (BytesHasPrefix(data, &WMA_HEADER, 0)) {
+        return "wma";
+    }
+    if (BytesHasPrefix(data, &AAC_HEADER, 0)) {
+        return "aac";
+    }
+    if (BytesHasPrefix(data, &DFF_HEADER, 0)) {
+        return "dff";
+    }
+    if (data->size() >= (4 + M4A_HEADER.size()) && BytesHasPrefix(data, &M4A_HEADER, 4)) {
+        return "m4a";
+    }
+    return "mp3";
+}
+
 
 #endif //MYKGMWASM_KGMUTILS_H

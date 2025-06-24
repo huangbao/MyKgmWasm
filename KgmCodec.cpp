@@ -65,7 +65,7 @@ size_t KgmCodec::PreDec(uint8_t *fileData, size_t size, bool iV) {
     return headerLen;
 }
 
-std::vector<uint8_t> *KgmCodec::decodeKgm(char *filepath) {
+DecodeResult *KgmCodec::decodeKgm(char *filepath) {
 
     std::vector<uint8_t> *result = new std::vector<uint8_t>;
 
@@ -95,7 +95,7 @@ std::vector<uint8_t> *KgmCodec::decodeKgm(char *filepath) {
 
     uint8_t *blockData = new uint8_t[DECRYPTION_BUF_SIZE];
 
-    int aaa = 0;
+
 
 
     while (bytesToDecrypt > 0) {
@@ -119,7 +119,7 @@ std::vector<uint8_t> *KgmCodec::decodeKgm(char *filepath) {
         for (int i = 0; i < blockSize; ++i) {
             result->push_back(blockData[i]);
         }
-        aaa++;
+
 
 
     }
@@ -133,6 +133,8 @@ std::vector<uint8_t> *KgmCodec::decodeKgm(char *filepath) {
 
     delete[] fileBuf;
     fileBuf = nullptr;
-
-    return result;
+    DecodeResult *decodeResult = new DecodeResult();
+    decodeResult->data = result;
+    decodeResult->ext = parseAudioExt(result);
+    return decodeResult;
 }
